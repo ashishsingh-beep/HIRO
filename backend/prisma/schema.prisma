@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Profile {
+  id            String       @id @db.Uuid
+  email         String       @unique
+  name          String
+  role          String       @default("recruiter") // "admin" or "recruiter"
+  password      String?      // Storing plain-text passwords as requested
+  entries       DailyEntry[]
+  created_at    DateTime     @default(now())
+
+  @@map("profiles")
+}
+
+model DailyEntry {
+  id                   String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  user_id              String   @db.Uuid
+  entry_date           DateTime @db.Date
+  position             String
+  role_type            String
+  resumes              Int      @default(0)
+  shortlisted          Int      @default(0)
+  interviews_scheduled Int      @default(0)
+  interviews_completed Int      @default(0)
+  offers               Int      @default(0)
+  closures             Int      @default(0)
+  created_at           DateTime @default(now())
+
+  profile Profile @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("daily_entries")
+}
+
+model Position {
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  department String
+  is_active  Boolean  @default(true)
+
+  @@map("positions")
+}
+
+model Notification {
+  id             String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  recruiter_name String
+  message        String
+  is_read        Boolean  @default(false)
+  type           String
+  target_id      String?
+  created_at     DateTime @default(now())
+
+  @@map("notifications")
+}
