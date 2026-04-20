@@ -79,7 +79,7 @@ function App() {
                   <Route path="my-activity" element={<RecruiterHistory currentUser={currentUser} />} />
                   <Route path="scorecards" element={currentUser.role === 'admin' ? <Scorecards /> : <Navigate to="/daily-entry" />} />
                   <Route path="reports" element={currentUser.role === 'admin' ? <Reports /> : <Navigate to="/daily-entry" />} />
-                  <Route path="profile" element={<Profile currentUser={currentUser} />} />
+                  <Route path="profile" element={<Profile currentUser={currentUser} onLogout={handleLogout} />} />
                 </Routes>
               </div>
             </main>

@@ -51,6 +51,54 @@ const RecruiterHistory = ({ currentUser }) => {
         setLoading(false);
     };
 
+    const handleDownloadCSV = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('daily_entries')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .order('entry_date', { ascending: false });
+
+            if (error) throw error;
+
+            if (data && data.length > 0) {
+                const headers = ['Date', 'Recruiter', 'Position', 'Vertical', 'Resumes', 'Shortlisted', 'Interviews', 'Offers', 'Closures'];
+                const csvRows = [headers.join(',')];
+
+                data.forEach(e => {
+                    const row = [
+                        e.entry_date,
+                        `"${currentUser.name}"`,
+                        `"${e.position}"`,
+                        `"${e.role_type}"`,
+                        e.resumes,
+                        e.shortlisted,
+                        e.interviews_completed,
+                        e.offers,
+                        e.closures
+                    ];
+                    csvRows.push(row.join(','));
+                });
+
+                const csvContent = csvRows.join('\n');
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', `My_Activity_${new Date().toISOString().split('T')[0]}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                alert('No entries to download');
+            }
+        } catch (error) {
+            console.error('Error downloading CSV:', error);
+            alert('Failed to download CSV');
+        }
+    };
+
     const totalPages = Math.ceil(totalCount / pageSize);
 
     return (
@@ -87,9 +135,19 @@ const RecruiterHistory = ({ currentUser }) => {
             </div>
 
             <div className="card mt-4">
-                <div className="section-header">
-                    <h3>All Submissions</h3>
-                    <p>Detailed breakdown of your daily reports</p>
+                <div className="section-header header-with-actions">
+                    <div>
+                        <h3>All Submissions</h3>
+                        <p>Detailed breakdown of your daily reports</p>
+                    </div>
+                    <button 
+                        className="btn btn-outline btn-sm" 
+                        onClick={handleDownloadCSV}
+                        disabled={loading || entries.length === 0}
+                    >
+                        <span className="material-icons-round">file_download</span>
+                        Download CSV
+                    </button>
                 </div>
                 <div className="table-responsive">
                     <table className="data-table">

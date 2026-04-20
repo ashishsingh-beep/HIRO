@@ -3,7 +3,7 @@ import { supabase } from '../../api/supabase';
 import { API_ROUTES } from '../../api/config';
 import Modal from '../UI/Modal';
 
-const Profile = ({ currentUser }) => {
+  const Profile = ({ currentUser, onLogout }) => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -175,6 +175,15 @@ const Profile = ({ currentUser }) => {
               >
                 <span className="material-icons-round">edit</span>
                 Edit Personal Details
+              </button>
+
+              <button 
+                className="btn btn-block mt-4" 
+                onClick={onLogout}
+                style={{ background: '#fee2e2', color: '#ef4444', border: 'none' }}
+              >
+                <span className="material-icons-round">logout</span>
+                Logout from Account
               </button>
             </div>
           </>
