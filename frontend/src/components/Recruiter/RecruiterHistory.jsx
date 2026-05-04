@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-hot-toast';
 import { supabase } from '../../api/supabase';
 
 const RecruiterHistory = ({ currentUser }) => {
@@ -91,11 +92,11 @@ const RecruiterHistory = ({ currentUser }) => {
                 link.click();
                 document.body.removeChild(link);
             } else {
-                alert('No entries to download');
+                toast.error('No entries to download');
             }
         } catch (error) {
             console.error('Error downloading CSV:', error);
-            alert('Failed to download CSV');
+            toast.error('Failed to download CSV');
         }
     };
 

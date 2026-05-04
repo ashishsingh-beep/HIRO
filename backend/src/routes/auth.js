@@ -38,6 +38,20 @@ router.post('/login', async (req, res) => {
 router.post('/signup', async (req, res) => {
     try {
         const { email, password, name, role } = req.body;
+
+        // Restriction: Only one HR Manager (Admin) allowed
+        if (role === 'admin') {
+            const { data: existingAdmin, error: adminCheckError } = await supabase
+                .from('profiles')
+                .select('id')
+                .eq('role', 'admin')
+                .limit(1);
+            
+            if (existingAdmin && existingAdmin.length > 0) {
+                return res.status(403).json({ error: 'An HR Manager already exists. Only one admin is allowed.' });
+            }
+        }
+
         const id = require('crypto').randomUUID();
         
         const { data, error } = await supabase
@@ -104,6 +118,22 @@ router.put('/me', authenticateToken, async (req, res) => {
         }
         
         res.json(updatedProfile);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Check if an admin already exists
+router.get('/admin-exists', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('role', 'admin')
+            .limit(1);
+        
+        if (error) throw error;
+        res.json({ exists: data && data.length > 0 });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

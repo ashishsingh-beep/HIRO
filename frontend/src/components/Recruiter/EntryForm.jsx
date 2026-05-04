@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-hot-toast';
 import { supabase } from '../../api/supabase';
-import Modal from '../UI/Modal';
 import { API_ROUTES } from '../../api/config';
 
 const EntryForm = ({ currentUser }) => {
@@ -24,7 +24,6 @@ const EntryForm = ({ currentUser }) => {
   
   const [recentEntries, setRecentEntries] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [modalState, setModalState] = useState({ isOpen: false, title: '', message: '', type: 'success' });
   
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -110,7 +109,7 @@ const EntryForm = ({ currentUser }) => {
     
     const token = localStorage.getItem('hiro_token');
     if (!token) {
-      setModalState({ isOpen: true, title: 'Session Expired', message: 'Please login again.', type: 'error' });
+      toast.error('Session Expired: Please login again.');
       setLoading(false);
       return;
     }
@@ -120,12 +119,18 @@ const EntryForm = ({ currentUser }) => {
 
     try {
       if (isOtherVertical) {
-        if (!customVertical.trim()) throw new Error('Please enter vertical name.');
+        if (!customVertical.trim()) {
+          toast.error('Please enter vertical name.');
+          throw new Error('Please enter vertical name.');
+        }
         finalVertical = customVertical;
       }
 
       if (isOtherPosition) {
-        if (!customPosition.trim()) throw new Error('Please enter position name.');
+        if (!customPosition.trim()) {
+          toast.error('Please enter position name.');
+          throw new Error('Please enter position name.');
+        }
         const posResponse = await fetch(API_ROUTES.POSITIONS, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -136,6 +141,7 @@ const EntryForm = ({ currentUser }) => {
       }
 
       if (!finalPosition || !finalVertical) {
+        toast.error('Please specify both Position and Vertical.');
         throw new Error('Please specify both Position and Vertical.');
       }
 
@@ -156,7 +162,7 @@ const EntryForm = ({ currentUser }) => {
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Failed to submit');
 
-      setModalState({ isOpen: true, title: 'Success!', message: 'Daily report published!', type: 'success' });
+      toast.success('Daily report published!');
       
       setFormData({
         position: '', role_type: '', resumes: 0, shortlisted: 0,
@@ -169,7 +175,7 @@ const EntryForm = ({ currentUser }) => {
       fetchRecentEntries();
       fetchPositions(); 
     } catch (error) {
-      setModalState({ isOpen: true, title: 'Error', message: error.message, type: 'error' });
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }
@@ -311,13 +317,6 @@ const EntryForm = ({ currentUser }) => {
         </div>
       </div>
 
-      <Modal 
-        isOpen={modalState.isOpen} 
-        onClose={() => setModalState(prev => ({ ...prev, isOpen: false }))}
-        title={modalState.title}
-        message={modalState.message}
-        type={modalState.type}
-      />
     </div>
   );
 };

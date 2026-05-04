@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { toast } from 'react-hot-toast';
 import { supabase } from '../../api/supabase';
 import { API_ROUTES } from '../../api/config';
 
@@ -11,6 +12,20 @@ const Signup = ({ onShowLogin }) => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [adminExists, setAdminExists] = useState(false);
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      try {
+        const res = await fetch(API_ROUTES.ADMIN_EXISTS);
+        const data = await res.json();
+        setAdminExists(data.exists);
+      } catch (err) {
+        console.error('Failed to check admin status:', err);
+      }
+    };
+    checkAdmin();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,11 +48,11 @@ const Signup = ({ onShowLogin }) => {
         throw new Error(data.error || 'Signup failed');
       }
 
-      alert('Signup successful! Please log in.');
+      toast.success('Signup successful! Please log in.');
       onShowLogin();
     } catch (err) {
       console.error('Signup error:', err);
-      alert('Signup failed: ' + err.message);
+      toast.error('Signup failed: ' + err.message);
     }
     setLoading(false);
   };
@@ -112,8 +127,9 @@ const Signup = ({ onShowLogin }) => {
                 <label htmlFor="signup-role">Role</label>
                 <select id="signup-role" value={formData.role} onChange={handleChange} required>
                   <option value="recruiter">Recruiter</option>
-                  <option value="admin">HR Manager (Admin)</option>
+                  {!adminExists && <option value="admin">HR Manager (Admin)</option>}
                 </select>
+                {adminExists && <p className="text-xs text-muted mt-1">HR Manager role is already assigned.</p>}
               </div>
               <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
                 {loading ? 'Creating Account...' : 'Create Account'}

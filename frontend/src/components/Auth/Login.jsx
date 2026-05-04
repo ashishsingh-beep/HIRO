@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { toast } from 'react-hot-toast';
 import { supabase } from '../../api/supabase';
 import { API_ROUTES } from '../../api/config';
 
@@ -28,7 +29,7 @@ const Login = ({ onLoginSuccess, onShowSignup }) => {
       localStorage.setItem('hiro_token', data.token);
       onLoginSuccess(data.user);
     } catch (err) {
-      alert('Login failed: ' + err.message);
+      toast.error('Login failed: ' + err.message);
     }
     setLoading(false);
   };
