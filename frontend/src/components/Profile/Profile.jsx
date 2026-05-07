@@ -178,9 +178,8 @@ import Modal from '../UI/Modal';
               </button>
 
               <button 
-                className="btn btn-block mt-4" 
+                className="btn btn-block mt-4 logout-btn" 
                 onClick={onLogout}
-                style={{ background: '#fee2e2', color: '#ef4444', border: 'none' }}
               >
                 <span className="material-icons-round">logout</span>
                 Logout from Account

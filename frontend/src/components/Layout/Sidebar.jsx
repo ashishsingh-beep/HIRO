@@ -55,6 +55,15 @@ const Sidebar = ({ currentUser, onLogout }) => {
             Reports
           </Link>
         )}
+        {isAdmin && (
+          <Link
+            to="/recruiters"
+            className={`nav-item ${isActive('/recruiters') ? 'active' : ''}`}
+          >
+            <span className="material-icons-round">people_alt</span>
+            Recruiter Management
+          </Link>
+        )}
       </nav>
       <div className="sidebar-bottom">
         <Link to="/profile" className={`user-profile-link ${isActive('/profile') ? 'active' : ''}`}>

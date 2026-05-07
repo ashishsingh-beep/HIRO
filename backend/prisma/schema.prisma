@@ -12,6 +12,7 @@ model Profile {
   email         String       @unique
   name          String
   role          String       @default("recruiter") // "admin" or "recruiter"
+  status        String       @default("pending")   // "pending", "approved", or "rejected"
   password      String?      // Storing plain-text passwords as requested
   entries       DailyEntry[]
   created_at    DateTime     @default(now())

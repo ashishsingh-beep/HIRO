@@ -8,5 +8,6 @@ export const API_ROUTES = {
   POSITIONS: `${API_BASE_URL}/api/positions`,
   REPORTS: `${API_BASE_URL}/api/entries/reports`,
   DASHBOARD: `${API_BASE_URL}/api/dashboard`,
-  ADMIN_EXISTS: `${API_BASE_URL}/api/auth/admin-exists`
+  ADMIN_EXISTS: `${API_BASE_URL}/api/auth/admin-exists`,
+  RECRUITERS: `${API_BASE_URL}/api/auth/recruiters`
 };

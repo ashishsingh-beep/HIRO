@@ -10,6 +10,7 @@ import RecruiterHistory from './components/Recruiter/RecruiterHistory';
 import Scorecards from './components/Scorecards/Scorecards';
 import Reports from './components/Reports/Reports';
 import Profile from './components/Profile/Profile';
+import RecruiterManagement from './components/Admin/RecruiterManagement';
 import { Toaster } from 'react-hot-toast';
 import './index.css';
 
@@ -18,6 +19,13 @@ function App() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('hiro_theme') || 'light';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('hiro_theme', theme);
+  }, [theme]);
 
   useEffect(() => {
     // Check local storage for persistent session
@@ -97,17 +105,23 @@ function App() {
         {/* Authenticated Layout Wrapper */}
         <Route path="/*" element={
           !currentUser ? <Navigate to="/login" /> : (
-            <div className="layout">
+            <div className="layout" data-theme={theme}>
               <Sidebar currentUser={currentUser} onLogout={handleLogout} />
               <main className="main-content">
-                <Topbar currentView={location.pathname.replace('/', '')} currentUser={currentUser} />
+                <Topbar 
+                  currentView={location.pathname.replace('/', '')} 
+                  currentUser={currentUser} 
+                  theme={theme} 
+                  toggleTheme={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')} 
+                />
                 <div className="content-area">
                   <Routes>
-                    <Route path="dashboard" element={currentUser.role === 'admin' ? <Dashboard /> : <Navigate to="/daily-entry" />} />
+                    <Route path="dashboard" element={currentUser.role === 'admin' ? <Dashboard theme={theme} /> : <Navigate to="/daily-entry" />} />
                     <Route path="daily-entry" element={<EntryForm currentUser={currentUser} />} />
                     <Route path="my-activity" element={<RecruiterHistory currentUser={currentUser} />} />
                     <Route path="scorecards" element={currentUser.role === 'admin' ? <Scorecards /> : <Navigate to="/daily-entry" />} />
                     <Route path="reports" element={currentUser.role === 'admin' ? <Reports /> : <Navigate to="/daily-entry" />} />
+                    <Route path="recruiters" element={currentUser.role === 'admin' ? <RecruiterManagement /> : <Navigate to="/daily-entry" />} />
                     <Route path="profile" element={<Profile currentUser={currentUser} onLogout={handleLogout} />} />
                   </Routes>
                 </div>

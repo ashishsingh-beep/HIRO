@@ -20,7 +20,7 @@ ChartJS.register(
   Legend
 );
 
-const Dashboard = () => {
+const Dashboard = ({ theme }) => {
   const [filter, setFilter] = useState({ timeframe: 'month', position: 'all' });
   const [metrics, setMetrics] = useState({ resumes: 0, shortlisted: 0, interviews: 0, closures: 0 });
   const [chartData, setChartData] = useState({ funnel: null, performance: null });
@@ -166,20 +166,59 @@ const Dashboard = () => {
         ))}
       </div>
 
-      <div className="charts-grid">
-        <div className="chart-card">
-          <h3>Conversion Funnel</h3>
-          <div className="chart-container">
-            {chartData.funnel && <Bar data={chartData.funnel} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }} />}
+      {(() => {
+        const chartOptions = {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              backgroundColor: theme === 'dark' ? '#1e293b' : '#ffffff',
+              titleColor: theme === 'dark' ? '#f8fafc' : '#0f172a',
+              bodyColor: theme === 'dark' ? '#94a3b8' : '#64748b',
+              borderColor: theme === 'dark' ? '#334155' : '#e2e8f0',
+              borderWidth: 1
+            }
+          },
+          scales: {
+            x: {
+              grid: {
+                color: theme === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)'
+              },
+              ticks: {
+                color: theme === 'dark' ? '#94a3b8' : '#64748b'
+              }
+            },
+            y: {
+              grid: {
+                color: theme === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)'
+              },
+              ticks: {
+                color: theme === 'dark' ? '#94a3b8' : '#64748b'
+              }
+            }
+          }
+        };
+
+        return (
+          <div className="charts-grid">
+            <div className="chart-card">
+              <h3>Conversion Funnel</h3>
+              <div className="chart-container">
+                {chartData.funnel && <Bar data={chartData.funnel} options={chartOptions} />}
+              </div>
+            </div>
+            <div className="chart-card">
+              <h3>Recruiter Performance</h3>
+              <div className="chart-container">
+                {chartData.performance && <Bar data={chartData.performance} options={chartOptions} />}
+              </div>
+            </div>
           </div>
-        </div>
-        <div className="chart-card">
-          <h3>Recruiter Performance</h3>
-          <div className="chart-container">
-            {chartData.performance && <Bar data={chartData.performance} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }} />}
-          </div>
-        </div>
-      </div>
+        );
+      })()}
 
       <div className="card mt-4">
         <div className="section-header">

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../api/supabase';
 
-const Topbar = ({ currentView, currentUser }) => {
+const Topbar = ({ currentView, currentUser, theme, toggleTheme }) => {
   const [notifications, setNotifications] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -57,6 +57,17 @@ const Topbar = ({ currentView, currentUser }) => {
       </div>
       <div className="topbar-actions">
         
+        <button 
+          className="icon-btn theme-toggle" 
+          onClick={toggleTheme}
+          title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
+          style={{ transition: 'all 0.3s ease' }}
+        >
+          <span className="material-icons-round">
+            {theme === 'light' ? 'dark_mode' : 'light_mode'}
+          </span>
+        </button>
+
         <div className="notification-wrapper">
           <button className="icon-btn" onClick={() => { setShowDropdown(!showDropdown); if(showDropdown) markAsRead(); }}>
             <span className="material-icons-round">notifications</span>
